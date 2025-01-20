@@ -1,0 +1,3 @@
+2024-11-21 19:21:45,736 - __main__ - WARNING - Seeking Alpha API key not found. Some features may be limited.
+2024-11-21 19:21:45,737 - __main__ - INFO - Starting market analysis...
+2024-11-21 19:21:45,737 - __main__ - ERROR - Critical error during market analysis: 'DataCollector' object has no attribute 'get_market_symbols'

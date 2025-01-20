@@ -1,0 +1,100 @@
+# Google Colab Setup Instructions
+
+Follow these steps to set up the Superstock Analyzer in Google Colab:
+
+1. Install Required Packages
+```python
+!pip install yfinance>=0.2.3 pandas>=1.5.0 numpy>=1.21.0 requests>=2.28.0 python-dotenv>=0.19.0 openai>=0.27.0 beautifulsoup4>=4.9.3 matplotlib>=3.5.0 seaborn>=0.11.0 schedule>=1.1.0 scipy>=1.7.0 ta-lib>=0.4.24
+```
+
+2. Clone Repository
+```python
+!git clone https://github.com/blakecole/superstock-analyzer.git
+%cd superstock_analyzer
+```
+
+3. Set Up Environment Variables
+```python
+import os
+
+# Required API Keys
+os.environ['OPENAI_API_KEY'] = 'your_openai_api_key'  # Required
+
+# Optional API Keys
+os.environ['ALPHA_VANTAGE_API_KEY'] = 'your_alpha_vantage_api_key'  # Optional
+os.environ['SEEKING_ALPHA_API_KEY'] = 'your_seeking_alpha_api_key'  # Optional
+os.environ['FINNHUB_API_KEY'] = 'your_finnhub_api_key'  # Optional
+
+# Optional Rate Limiting
+os.environ['MAX_REQUESTS_PER_MINUTE'] = '60'
+os.environ['REQUEST_TIMEOUT_SECONDS'] = '30'
+
+# Optional Logging Configuration
+os.environ['LOG_LEVEL'] = 'INFO'
+os.environ['LOG_FILE_PATH'] = '/content/logs/superstock.log'
+
+# Create logs directory
+!mkdir -p /content/logs
+```
+
+4. Mount Google Drive (Optional - for persistent storage)
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Set output directory to Google Drive
+output_dir = '/content/drive/MyDrive/superstock_analyzer/reports'
+!mkdir -p {output_dir}
+```
+
+5. Import and Initialize
+```python
+from main import SuperstockAnalyzer
+
+analyzer = SuperstockAnalyzer({
+    'output_dir': output_dir if 'output_dir' in locals() else 'reports',
+    'min_market_cap': 1e6,    # $1M minimum
+    'max_market_cap': 100e6,  # $100M maximum
+    'min_price': 1.0,         # $1 minimum price
+    'min_volume': 100000      # 100K minimum daily volume
+})
+```
+
+6. Run Analysis
+```python
+results = analyzer.analyze_market()
+print(f"Found {len(results)} potential Superstocks")
+```
+
+7. Access Results
+If using Google Drive:
+```python
+print(f"Results saved to: {output_dir}")
+```
+Otherwise:
+```python
+print("Results saved to: ./reports")
+```
+
+Notes:
+- Replace 'your_*_api_key' with your actual API keys
+- Only OPENAI_API_KEY is required; other API keys are optional but recommended
+- The analysis may take some time depending on the number of stocks being analyzed
+- Using Google Drive mount is recommended for persistent storage of results
+- Logs will be saved to /content/logs/superstock.log
+- You can adjust rate limiting and logging settings as needed
+
+For more detailed examples and visualizations, refer to Superstock_Analyzer_Demo.ipynb in the repository.
+
+Troubleshooting:
+1. If you get API rate limit errors:
+   - Increase REQUEST_TIMEOUT_SECONDS
+   - Decrease MAX_REQUESTS_PER_MINUTE
+
+2. If you get memory errors:
+   - Restart the runtime
+   - Reduce the market cap range to analyze fewer stocks
+
+3. If you get authentication errors:
+   - Verify your API keys are correct
+   - Ensure you've set all required environment variables
